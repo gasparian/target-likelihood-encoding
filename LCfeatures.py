@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+
 class LCfeatures(object):
     
     """Likelihoods / counters features creation.
@@ -22,7 +25,7 @@ class LCfeatures(object):
     -------
     likelihood / counters sets: dict of DataFrames
     transformed DataFrame : Pandas DataFrame
-    
+
     """
 
     def __init__(self, cv, modes=['mean', 'std', 'counter'], alpha=10, features='all', target='conversion'):
