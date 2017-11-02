@@ -35,7 +35,7 @@ class LCfeatures(object):
         self.features = features
         self.target = target
 
-    def timeSplit(df, folds=5):
+    def timeSplit(self, df, folds=5):
         idx = list(df.index.values)
         folds += 1
         length = len(idx)
@@ -156,5 +156,4 @@ class LCfeatures(object):
                         df = pd.merge(df, self.values[name]['test'][f], how="left", left_on=f, right_index=True)
                         if name != 'counts':
                             df['%s_%s_SA' % (f, name)] = df['%s_%s_SA' % (f, name)].fillna(self.global_mean_test)
-        df.drop_duplicates(subset=['account id'], keep='last', inplace=True)
         return df

@@ -12,6 +12,11 @@ So if we have a rare subclass, it's likelihood will tend to the global mean valu
 
 See the code for more info.  
 
+## Installation
+```
+pip instasll lcfeatures
+```
+
 ## Usage
 
 This kind of features leads to overfitting, so LC-Features must be created **inside** the cross-validation loop.  
