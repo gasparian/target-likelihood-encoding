@@ -14,7 +14,7 @@ See the code for more info.
 
 ## Installation
 ```
-pip instasll lcfeatures
+pip install lcfeatures
 ```
 
 ## Usage
