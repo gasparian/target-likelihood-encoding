@@ -56,18 +56,11 @@ class LCfeatures(object):
         if self.features == 'all':
             self.features = list(df.columns).remove(self.target)
         self.values = {
-            'mean': {
+            key: {
                 'train': {i:{} for i in range(1,self.nfolds+1)},
                 'test': {}
-            },
-            'counts': {
-                'train': {i:{} for i in range(1,self.nfolds+1)},
-                'test': {}
-            },
-            'stds': {
-                'train': {i:{} for i in range(1,self.nfolds+1)},
-                'test': {}
-            }
+                }
+            for key in ['mean', 'counts', 'stds']
         }
 
         fold = 1
