@@ -63,7 +63,7 @@ class LCfeatures:
 
                 if 'mean' in self.modes:
                     current_mean = groupby_feature[self.target].mean()
-                    self.values['mean']['train'][fold][f] = ((current_mean * current_size + global_mean * self.alpha) / (current_size + self.alpha)).fillna(global_mean)
+                    self.values['mean']['train'][fold][f] = (current_mean * current_size + global_mean * self.alpha) / (current_size + self.alpha)
 
             fold += 1
         self.global_mean_test = df[self.target].mean()
@@ -76,7 +76,7 @@ class LCfeatures:
 
             if 'mean' in self.modes:
                 current_mean_test = groupby_feature_test[self.target].mean()
-                self.values['mean']['test'][f] = ((current_mean_test * current_size_test + self.global_mean_test * self.alpha) / (current_size_test + self.alpha)).fillna(self.global_mean_test)
+                self.values['mean']['test'][f] = (current_mean_test * current_size_test + self.global_mean_test * self.alpha) / (current_size_test + self.alpha)
     
     def transform(self, df, mode='train'):
         if mode == 'train':
