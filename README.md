@@ -6,7 +6,7 @@ This algorithm is very helpful for handling the categorical features. It uses ta
 
 where:  
 * *global mean* - average target value across all train set, 
-* *alpha* - regularization.  
+* *alpha* - regularization value.  
 
 So if we have a rare subclass, it's likelihood will tend to the global mean value.
 
@@ -27,6 +27,7 @@ encoding.fit(train)
 train = encoding.transform(train, mode='train')
 test = encoding.transform(test, mode='test')
 ```
+After that, new columns with suffix "_LC" will be created.
 
 ## Dependencies  
 * python 3.6
