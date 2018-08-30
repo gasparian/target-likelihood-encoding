@@ -84,7 +84,7 @@ class LCfeatures:
             for train_index, test_index in self.timeSplit(df):
                 globals_ = {
                     "mean":df[self.target].loc[train_index].mean(),
-                    "counter":df[df[self.target] > 0][self.target].loc[train_index]
+                    "counter":len(set(df[df[self.target] > 0].index.tolist()).intersection(set(train_index)))
                 }
                 for name in self.modes:
                     for f in self.features:
