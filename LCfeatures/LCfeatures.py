@@ -88,7 +88,7 @@ class LCfeatures:
                 }
                 for name in self.modes:
                     for f in self.features:
-                        new_name = "%s_%s_SA" % (f, name)
+                        new_name = "%s_%s_LC" % (f, name)
                         if new_name not in df.columns.tolist():
                             df[new_name] = np.nan
                         if fold == 0:
@@ -99,5 +99,5 @@ class LCfeatures:
         elif mode == 'test':
             for name in self.modes:
                 for f in self.features:
-                    df['%s_%s_SA' % (f, name)] = self.values[name]['test'][f]
+                    df['%s_%s_LC' % (f, name)] = self.values[name]['test'][f]
         return df
