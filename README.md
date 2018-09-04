@@ -2,7 +2,7 @@
 
 This algorithm is very helpful for handling the categorical features. It uses target values to compute target statistics for every sub-category according to this formula:  
 
-*smoothed likelihood* = (*fold_target_stat* nrows + *global_val* * *alpha*) / (*nrows* + *alpha*)  
+*smoothed likelihood* = (*fold_target_stat* * nrows + *global_val* * *alpha*) / (*nrows* + *alpha*)  
 
 where:  
 * *target_statistic* - target statistic value across current fold,
