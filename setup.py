@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='lcfeatures',
-      version='0.11',
+      version='0.12',
       description='Creates features statistics based on target value',
       url='https://github.com/gasparian/LC-Features',
       author='gasparian',
