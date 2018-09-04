@@ -77,7 +77,6 @@ class LCfeatures:
         global_std = df[self.target].std()
         global_min = df[self.target].min()
         global_max = df[self.target].max()
-        time_test = df.index
         for f in self.features:
             groupby_feature = df.groupby([f])
             current_size = groupby_feature_test.size()
