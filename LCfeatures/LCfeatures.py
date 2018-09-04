@@ -33,7 +33,7 @@ class LCfeatures:
         }
 
     def smoothed_encoding(self, current, current_size, global_val):
-        return (current * current_size + global_mean * self.alpha) / (current_size + self.alpha)
+        return (current * current_size + global_val * self.alpha) / (current_size + self.alpha)
 
     def timeSplit(self, df):
         n_samples = len(df)
