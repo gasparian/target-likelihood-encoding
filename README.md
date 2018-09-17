@@ -1,6 +1,6 @@
-# Likelihood-Counts features
+# target-likelihood-encoding
 
-This algorithm is very helpful for handling the categorical features. It uses target values to compute target statistics for every sub-category according to this formula:  
+Basic idea: let's use target values to compute statistics for every sub-category of categorical features according to this formula:  
 
 *smoothed likelihood* = (*fold_target_stat* * nrows + *global_val* * *alpha*) / (*nrows* + *alpha*)  
 
@@ -13,22 +13,17 @@ So if we have a rare subclass, it's target statistic will tend to the global val
 
 See the code for more info.  
 
-## Installation
-```
-pip install lcfeatures
-```
-
 ## Usage
 
-This kind of features leads to overfitting, so LC-Features must be created **inside** the cross-validation loop.  
+This kind of features leads to overfitting, so it must be created **inside** the cross-validation loop.  
 
 ```
-encoding = LCfeatures(TimeSeriesSplit(n_splits=5), modes=['mean'], alpha=10, features='all', target='conversion'))
+encoding = TLEncoding(n_splits=9, modes=['mean'], alpha=10, features='all', target='conversion'))
 encoding.fit(train)
 train = encoding.transform(train, mode='train')
 test = encoding.transform(test, mode='test')
 ```
-After that, new columns with suffix "_LC" will be created.
+After that, new columns with suffix "_TL" will be added.
 
 ## Dependencies  
 * python 3.6
