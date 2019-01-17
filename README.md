@@ -9,7 +9,7 @@ where:
 * *global_val* - target statistic value across all train set, 
 * *alpha* - regularization value.  
 
-So if we have a rare subclass, it's target statistic will tend to the global value.
+So if we have a rare subclass, it's target statistic will tend to the globalм mean value.
 
 See the code for more info.  
 
