@@ -9,8 +9,6 @@ class TLEncoding:
     ----------
     n_splits : int
         Number of (train_folds+ 1 test_fold) in TimeSeriesSplit
-    modes : list od strings
-        what kind of features to generate: 'mean', 'std', 'min', 'max'
     alpha : float
         regularization coefficient
     features : list of strings / str.: 'all'
@@ -21,19 +19,15 @@ class TLEncoding:
         Splitted dataset
     """
 
-    def __init__(self, n_splits=9, modes=['mean'], alpha=10, features='all', target='conversion', splits=None):
+    def __init__(self, n_splits=9, alpha=10, target='conversion'):
         
         self.alpha = alpha
-        self.splits = splits
         self.n_splits = n_splits
-        self.modes = modes # 'std', 'mean', 'max', 'min'
-        self.features = features
+        self.modes = ["mean", "std"]
         self.target = target
         self.calculator = {
             "mean": lambda groupby_feature, current_size, global_mean: self.smoothed_encoding(groupby_feature[self.target].mean(), current_size, global_mean),
-            "std": lambda groupby_feature, current_size, global_std: self.smoothed_encoding(groupby_feature[self.target].std(), current_size, global_std),
-            "min": lambda groupby_feature, current_size, global_min: self.smoothed_encoding(groupby_feature[self.target].min(), current_size, global_min),
-            "max": lambda groupby_feature, current_size, global_max: self.smoothed_encoding(groupby_feature[self.target].max(), current_size, global_max)
+            "std": lambda groupby_feature, current_size, global_std: self.smoothed_encoding(groupby_feature[self.target].std(), current_size, global_std)
         }
 
     def smoothed_encoding(self, current, current_size, global_val):
@@ -51,10 +45,18 @@ class TLEncoding:
         test_starts = range(test_size + n_samples % n_folds, n_samples, test_size)
         for test_start in test_starts:
             yield (indices[:test_start], indices[test_start:test_start + test_size])
+            
+    def get_globs(self, df):
+        return {
+            "mean":df.mean(),
+            "std":df.std()
+        }
         
     def fit(self, df):
-        if self.features == 'all':
-            self.features = list(df.columns).remove(self.target)
+        
+        self.features = list(df.columns)
+        self.features.remove(self.target)
+
         self.values = {
             key: {
                 'train': {i:{} for i in range(self.n_splits)},
@@ -64,56 +66,48 @@ class TLEncoding:
         }
         
         fold = 0
-        if self.splits is None:
-            self.splits = self.timeSplit(df)
-        for train_index, test_index in self.splits:
-            Globals = {
-                "mean":df[self.target].loc[train_index].mean(),
-                "std":df[self.target].loc[train_index].std(),
-                "min":df[self.target].loc[train_index].min(),
-                "max":df[self.target].loc[train_index].max()
-            }
+        for train_index, test_index in self.timeSplit(df):
+            globs = self.get_globs(df.loc[train_index, self.target])
             for f in self.features:
                 groupby_feature = df.loc[train_index].groupby([f])
                 current_size = groupby_feature.size()
                 for mode in self.modes:
-                    self.values[mode]['train'][fold][f] = self.calculator[mode](groupby_feature, current_size, Globals[mode])
-
+                    self.values[mode]['train'][fold][f] = \
+                        self.calculator[mode](groupby_feature, current_size, globs[mode]).reset_index(drop=False).fillna(0)
             fold += 1
-        Globals = {
-            "mean":df[self.target].mean(),
-            "std":df[self.target].std(),
-            "min":df[self.target].min(),
-            "max":df[self.target].max()
-        }
+            
+        globs = self.get_globs(df[self.target])
         for f in self.features:
             groupby_feature = df.groupby([f])
             current_size = groupby_feature.size()
             for mode in self.modes:
-                self.values[mode]['test'][f] = self.calculator[mode](groupby_feature, current_size, Globals[mode])
+                self.values[mode]['test'][f] = \
+                    self.calculator[mode](groupby_feature, current_size, globs[mode]).reset_index(drop=False).fillna(0)
     
     def transform(self, df, mode='train'):
+        new_df = pd.DataFrame(index=df.index)
         if mode == 'train':
+            # target must be included in train mode
             fold = 0
-            for train_index, test_index in self.timeSplit(df):
-                global_vals = {
-                    "mean":df[self.target].loc[train_index].mean() if "mean" in self.modes else None,
-                    "std": df[self.target].loc[train_index].std() if "std" in self.modes else None,
-                    "max":df[self.target].loc[train_index].max() if "max" in self.modes else None,
-                    "min": df[self.target].loc[train_index].min() if "min" in self.modes else None,
-                }
+            for train_index, test_index in self.timeSplit(new_df):
+                globs = self.get_globs(df.loc[train_index, self.target])
                 for name in self.modes:
+                    # using the same features as for fitting
                     for f in self.features:
                         new_name = "%s_%s_TL" % (f, name)
-                        if new_name not in df.columns.tolist():
-                            df[new_name] = np.nan
+                            
                         if fold == 0:
-                            df.loc[train_index, new_name] = global_vals[name]
-                        else:
-                            df.loc[test_index, new_name] = self.values[name]['train'][fold][f]
+                            new_df.loc[train_index, new_name] = globs[name]
+                            
+                        new_df.loc[test_index, new_name] = \
+                            pd.merge(df.loc[test_index, [f]], self.values[name]['train'][fold][f], 
+                                     how="left", on=f)[0].values
                 fold += 1
+                
         elif mode == 'test':
             for name in self.modes:
                 for f in self.features:
-                    df['%s_%s_TL' % (f, name)] = self.values[name]['test'][f]
-        return df
+                    new_df['%s_%s_TL' % (f, name)] = \
+                        pd.merge(df[[f]], self.values[name]['test'][f], 
+                                 how="left", on=f)[0].values
+        return new_df
