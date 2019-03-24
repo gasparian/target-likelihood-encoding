@@ -3,7 +3,8 @@ import pandas as pd
 
 class TLEncoding:
     
-    """Target likelihood features.
+    """
+    Target likelihood features.
     Parameters
     https://github.com/gasparian/target-likelihood-encoding/blob/master/TLEncoding
     ----------
@@ -11,12 +12,8 @@ class TLEncoding:
         Number of (train_folds+ 1 test_fold) in TimeSeriesSplit
     alpha : float
         regularization coefficient
-    features : list of strings / str.: 'all'
-        fetures to encode
     target : str.
         target variable name
-    splits : list / generator
-        Splitted dataset
     """
 
     def __init__(self, n_splits=9, alpha=10, target='conversion'):
