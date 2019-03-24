@@ -20,8 +20,8 @@ This kind of features leads to overfitting, so it must be created **inside** the
 ```
 encoding = TLEncoding(n_splits=10, alpha=10, target='conversion')
 encoding.fit(train)
-train_TL = encoding.transform(train, mode='train')
-test_TL = encoding.transform(test, mode='test')
+tl_train = encoding.transform(train, mode='train')
+tl_test = encoding.transform(test, mode='test')
 ```
 
 ## Dependencies  
