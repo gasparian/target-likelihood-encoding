@@ -5,8 +5,6 @@ class TLEncoding:
     
     """
     Target likelihood features.
-    Parameters
-    https://github.com/gasparian/target-likelihood-encoding/blob/master/TLEncoding
     ----------
     n_splits : int
         Number of (train_folds+ 1 test_fold) in TimeSeriesSplit
@@ -16,11 +14,11 @@ class TLEncoding:
         target variable name
     """
 
-    def __init__(self, n_splits=9, alpha=10, target='conversion'):
+    def __init__(self, n_splits=9, alpha=10, target='conversion', modes=["mean", "std"]):
         
         self.alpha = alpha
         self.n_splits = n_splits
-        self.modes = ["mean", "std"]
+        self.modes = modes
         self.target = target
         self.calculator = {
             "mean": lambda groupby_feature, current_size, global_mean: self.smoothed_encoding(groupby_feature[self.target].mean(), current_size, global_mean),
@@ -108,3 +106,4 @@ class TLEncoding:
                         pd.merge(df[[f]], self.values[name]['test'][f], 
                                  how="left", on=f)[0].values
         return new_df
+
